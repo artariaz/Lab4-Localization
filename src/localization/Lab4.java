@@ -48,10 +48,10 @@ public class Lab4 {
 		if (buttonChoice == Button.ID_LEFT) {
 
 			// perform the ultrasonic localization
-			Navigator nav = new Navigator(leftMotor, rightMotor);
+			Navigator nav = new Navigator(leftMotor, rightMotor,odo,WHEEL_RADIUS,TRACK);
 			LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
 			USLocalizer usl = new USLocalizer(nav, usSensor, usData,
-					USLocalizer.LocalizationType.FALLING_EDGE);
+					USLocalizer.LocalizationType.FALLING_EDGE,odo);
 			usl.start();
 			/*
 			 * perform the light sensor localization LightLocalizer lsl = new
@@ -60,10 +60,10 @@ public class Lab4 {
 		} else if (buttonChoice == Button.ID_RIGHT) {
 
 			// perform the ultrasonic localization
-			Navigator nav = new Navigator(leftMotor, rightMotor);
+			Navigator nav = new Navigator(leftMotor, rightMotor,odo,WHEEL_RADIUS,TRACK);
 			LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
 			USLocalizer usl = new USLocalizer(nav, usSensor, usData,
-					USLocalizer.LocalizationType.RISING_EDGE);
+					USLocalizer.LocalizationType.RISING_EDGE,odo);
 			usl.start();
 			/*
 			 * perform the light sensor localization LightLocalizer lsl = new

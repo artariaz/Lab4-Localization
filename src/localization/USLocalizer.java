@@ -9,14 +9,22 @@ public class USLocalizer extends Thread {
 	
 	public void run(){
 		nav.start();
-		nav.state = Navigator.State.ROTATE;
+		
+		while(true){
+		nav.setState(Navigator.State.ROTATE);
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		nav.state = Navigator.State.IDLE;
-	
+		nav.setState(Navigator.State.IDLE);
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 	}
 }

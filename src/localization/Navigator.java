@@ -5,12 +5,11 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class Navigator extends Thread {
 	private EV3LargeRegulatedMotor rightMotor;
 	private EV3LargeRegulatedMotor leftMotor;
+	private State state = State.IDLE;
 
 	public enum State {
 		INIT, IDLE, ROTATE, FORWARD
 	}
-
-	public State state = State.INIT;
 
 	public Navigator(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
 		this.rightMotor = rightMotor;
@@ -22,18 +21,16 @@ public class Navigator extends Thread {
 			switch (this.state) {
 			case ROTATE:
 				rotateCW();
+				break;
 			case FORWARD:
 				goForward();
+				break;
 			case IDLE:
 				goIdle();
+				break;
+			default:
+				break;
 			}
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 		}
 
 	}
@@ -46,6 +43,12 @@ public class Navigator extends Thread {
 
 		this.rightMotor.backward();
 		this.leftMotor.forward();
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void goForward() {
@@ -54,13 +57,28 @@ public class Navigator extends Thread {
 
 		this.rightMotor.forward();
 		this.leftMotor.forward();
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void goIdle() {
 		this.rightMotor.setSpeed(0);
 		this.leftMotor.setSpeed(0);
-
 		this.rightMotor.forward();
 		this.leftMotor.forward();
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void setState(State state){
+		this.state = state;
 	}
 }

@@ -15,7 +15,7 @@ public class Lab4 {
 	public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(
 			LocalEV3.get().getPort("C"));
 	public static final Port usPort = LocalEV3.get().getPort("S1");
-	public static final Port colorPort = LocalEV3.get().getPort("S2");
+	//public static final Port colorPort = LocalEV3.get().getPort("S2");
 	
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 15.6;
@@ -26,9 +26,9 @@ public class Lab4 {
 		SampleProvider usValue = usSensor.getMode("Distance");
 		float[] usData = new float[usValue.sampleSize()];
 
-		SensorModes colorSensor = new EV3ColorSensor(colorPort);
-		SampleProvider colorValue = colorSensor.getMode("Red");
-		float[] colorData = new float[colorValue.sampleSize()]; // colorData is
+		//SensorModes colorSensor = new EV3ColorSensor(colorPort);
+		//SampleProvider colorValue = colorSensor.getMode("Red");
+		//float[] colorData = new float[colorValue.sampleSize()]; // colorData is
 																// the buffer in
 																// which data
 																// are returned
@@ -39,11 +39,11 @@ public class Lab4 {
 		LCDInfo lcd = new LCDInfo(odo);
 
 		// perform the ultrasonic localization
-		/*USLocalizer usl = new USLocalizer(odo, usValue, usData,
-				USLocalizer.LocalizationType.FALLING_EDGE);
-		usl.doLocalization();
+		Navigator nav = new Navigator(leftMotor, rightMotor);
+		USLocalizer usl = new USLocalizer(nav);
+		usl.start();
 
-		// perform the light sensor localization
+		/* perform the light sensor localization
 		LightLocalizer lsl = new LightLocalizer(odo, colorValue, colorData);
 		lsl.doLocalization();*/
 

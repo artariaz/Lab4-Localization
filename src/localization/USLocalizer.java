@@ -1,5 +1,6 @@
 package localization;
 
+import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
 public class USLocalizer extends Thread {
@@ -112,7 +113,7 @@ public class USLocalizer extends Thread {
 		double angleA;
 		double angleB;
 		try {
-			nav.setState(Navigator.State.ROTATECCW);
+			nav.setState(Navigator.State.ROTATECW);
 			Thread.sleep(1000);
 			nav.setState(Navigator.State.IDLE);
 		} catch (InterruptedException e) {
@@ -144,8 +145,12 @@ public class USLocalizer extends Thread {
 		// Record the angle
 		angleB = odo.getTheta();
 		double desiredAngle = averageAngles(angleA,angleB);
+		desiredAngle = desiredAngle - 45;
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
+		odo.setTheta(0);
+		
+
 	}
 
 	public void handleBFE() {
@@ -184,9 +189,13 @@ public class USLocalizer extends Thread {
 		// Record the angle
 		angleB = odo.getTheta();
 		double desiredAngle = averageAngles(angleA,angleB);
+		desiredAngle = desiredAngle + 135;
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
+		odo.setTheta(0);
+		
 	}
+
 
 	public void handleLRE() {
 

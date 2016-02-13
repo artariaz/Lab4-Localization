@@ -11,6 +11,7 @@ public class Navigator extends Thread {
 	private double leftRadius;
 	private double rightRadius;
 	private double width;
+	private int error = 5;
 
 	public enum State {
 		INIT, IDLE, ROTATECW, ROTATECCW, ROTATETO, FORWARD
@@ -37,7 +38,9 @@ public class Navigator extends Thread {
 				break;
 			case ROTATETO:
 				rotateTo();
+				if (faceDest()) {
 				this.state = State.IDLE;
+				}
 				break;
 			case FORWARD:
 				goForward();
@@ -164,6 +167,16 @@ public class Navigator extends Thread {
 			e.printStackTrace();
 		}
 
+	}
+	public boolean faceDest()  {
+		double currentAngle = this.odo.getTheta();
+
+		// If angle is near the desired angle given a tolerance error, return
+		// true
+		if (rotationalAngle + error >= currentAngle || rotationalAngle - error <= currentAngle) {
+			return true;
+		} else
+			return false;
 	}
 
 	private static int convertDistance(double radius, double distance) {

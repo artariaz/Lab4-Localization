@@ -40,7 +40,7 @@ public class Lab4 {
 
 		// perform the ultrasonic localization
 		Navigator nav = new Navigator(leftMotor, rightMotor);
-		USLocalizer usl = new USLocalizer(nav);
+		USLocalizer usl = new USLocalizer(nav,usSensor,usData);
 		usl.start();
 
 		/* perform the light sensor localization

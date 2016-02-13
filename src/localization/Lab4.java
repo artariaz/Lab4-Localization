@@ -45,41 +45,35 @@ public class Lab4 {
 		t.drawString(" Edge  | Edge  >", 0, 2);
 		int buttonChoice = Button.waitForAnyPress();
 
-		while (buttonChoice != Button.ID_LEFT
-				|| buttonChoice != Button.ID_RIGHT) {
+		if (buttonChoice == Button.ID_LEFT) {
 
-			if (buttonChoice == Button.ID_LEFT) {
-				
+			// perform the ultrasonic localization
+			Navigator nav = new Navigator(leftMotor, rightMotor);
+			LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
+			USLocalizer usl = new USLocalizer(nav, usSensor, usData,
+					USLocalizer.LocalizationType.FALLING_EDGE);
+			usl.start();
+			/*
+			 * perform the light sensor localization LightLocalizer lsl = new
+			 * LightLocalizer(odo, colorValue, colorData); lsl.doLocalization();
+			 */
+		} else if (buttonChoice == Button.ID_RIGHT) {
 
-				// perform the ultrasonic localization
-				Navigator nav = new Navigator(leftMotor, rightMotor);
-				LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
-				USLocalizer usl = new USLocalizer(nav, usSensor, usData, USLocalizer.LocalizationType.FALLING_EDGE);
-				
-				usl.start();
-				
-				
-				/*
-				 * perform the light sensor localization LightLocalizer lsl = new
-				 * LightLocalizer(odo, colorValue, colorData); lsl.doLocalization();
-				 */
-			} else {
+			// perform the ultrasonic localization
+			Navigator nav = new Navigator(leftMotor, rightMotor);
+			LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
+			USLocalizer usl = new USLocalizer(nav, usSensor, usData,
+					USLocalizer.LocalizationType.RISING_EDGE);
+			usl.start();
+			/*
+			 * perform the light sensor localization LightLocalizer lsl = new
+			 * LightLocalizer(odo, colorValue, colorData); lsl.doLocalization();
+			 */
+		}
 		
 
-				// perform the ultrasonic localization
-				Navigator nav = new Navigator(leftMotor, rightMotor);
-				LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
-				USLocalizer usl = new USLocalizer(nav, usSensor, usData, USLocalizer.LocalizationType.RISING_EDGE);
-				usl.start();
-				
-				/*
-				 * perform the light sensor localization LightLocalizer lsl = new
-				 * LightLocalizer(odo, colorValue, colorData); lsl.doLocalization();
-				 */
-			}
+		
 
-			
-		}
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)
 			;
 		System.exit(0);

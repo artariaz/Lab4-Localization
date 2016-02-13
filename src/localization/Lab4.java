@@ -37,6 +37,7 @@ public class Lab4 {
 		Odometer odo = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
 		odo.start();
 
+<<<<<<< HEAD
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		t.clear();
 
@@ -70,6 +71,12 @@ public class Lab4 {
 				// perform the ultrasonic localization
 				Navigator nav = new Navigator(leftMotor, rightMotor);
 				USLocalizer usl = new USLocalizer(nav, usSensor, usData, USLocalizer.LocalizationType.RISING_EDGE);
+=======
+		// perform the ultrasonic localization
+		Navigator nav = new Navigator(leftMotor, rightMotor);
+		USLocalizer usl = new USLocalizer(nav,usSensor,usData);
+		usl.start();
+>>>>>>> 0e732feff5e00a32b02ae0f10aa185ba1b89be0e
 
 				usl.start();
 				

@@ -8,7 +8,7 @@ public class Navigator extends Thread {
 	private State state = State.IDLE;
 
 	public enum State {
-		INIT, IDLE, ROTATE, FORWARD
+		INIT, IDLE, ROTATECW, ROTATECCW, FORWARD
 	}
 
 	public Navigator(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
@@ -19,8 +19,11 @@ public class Navigator extends Thread {
 	public void run() {
 		while (true) {
 			switch (this.state) {
-			case ROTATE:
+			case ROTATECW:
 				rotateCW();
+				break;
+			case ROTATECCW: 
+				rotateCCW();
 				break;
 			case FORWARD:
 				goForward();
@@ -33,6 +36,19 @@ public class Navigator extends Thread {
 			}
 		}
 
+	}
+	public void rotateCCW() {
+		this.rightMotor.setSpeed(150);
+		this.leftMotor.setSpeed(150);
+
+		this.rightMotor.forward();
+		this.leftMotor.backward();
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// Rotate Clockwise

@@ -75,7 +75,7 @@ public class USLocalizer extends Thread {
 		if (facingWall(getFilteredData())) {
 			this.location = Location.LEFT;
 			while (facingWall(getFilteredData())) {
-				nav.setState(Navigator.State.ROTATE);
+				nav.setState(Navigator.State.ROTATECW);
 			}
 			// No longer facing a wall, stop the motors
 			nav.setState(Navigator.State.IDLE);
@@ -86,7 +86,7 @@ public class USLocalizer extends Thread {
 		else {
 			this.location = Location.BOTTOM;
 			while (!(facingWall(getFilteredData()))) {
-				nav.setState(Navigator.State.ROTATE);
+				nav.setState(Navigator.State.ROTATECW);
 			}
 			nav.setState(Navigator.State.IDLE);
 			sleepThread(250);

@@ -8,11 +8,15 @@ public class USLocalizer extends Thread {
 	private boolean isFacingWall;
 	private SampleProvider usSensor;
 	private float[] usData;
+	
+	public enum LocalizationType { FALLING_EDGE, RISING_EDGE };
+	private LocalizationType locType;
 
-	public USLocalizer(Navigator nav, SampleProvider usSensor, float[] usData) {
+	public USLocalizer(Navigator nav, SampleProvider usSensor, float[] usData, LocalizationType locType) {
 		this.nav = nav;
 		this.usSensor = usSensor;
 		this.usData = usData;
+		this.locType = locType;
 	}
 
 	public void run() {
@@ -27,7 +31,7 @@ public class USLocalizer extends Thread {
 		
 	}
 
-	private float getFilteredData() {
+	public float getFilteredData() {
 		usSensor.fetchSample(usData, 0);
 		float distance = usData[0] * 100;
 		return distance;

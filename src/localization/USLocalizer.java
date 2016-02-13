@@ -111,6 +111,14 @@ public class USLocalizer extends Thread {
 	public void handleLFE() {
 		double angleA;
 		double angleB;
+		try {
+			nav.setState(Navigator.State.ROTATECCW);
+			Thread.sleep(1000);
+			nav.setState(Navigator.State.IDLE);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// Rotate clockwise until a wall is reached
 		while (!(facingWall(getFilteredData()))) {
 			nav.setState(Navigator.State.ROTATECW);
@@ -141,7 +149,43 @@ public class USLocalizer extends Thread {
 	}
 
 	public void handleBFE() {
-
+		double angleA;
+		double angleB;
+		try {
+			nav.setState(Navigator.State.ROTATECCW);
+			Thread.sleep(1000);
+			nav.setState(Navigator.State.IDLE);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Rotate clockwise until a wall is reached
+		while (!(facingWall(getFilteredData()))) {
+			nav.setState(Navigator.State.ROTATECCW);
+		}
+		// Stop when you see a wall
+		nav.setState(Navigator.State.IDLE);
+		// Record the angle
+		angleA = odo.getTheta();
+		// Rotate counter clockwise until another wall is reached
+		try {
+			nav.setState(Navigator.State.ROTATECW);
+			Thread.sleep(1000);
+			nav.setState(Navigator.State.IDLE);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		while (!(facingWall(getFilteredData()))) {
+			nav.setState(Navigator.State.ROTATECW);
+		}
+		// Stop when you see a wall
+		nav.setState(Navigator.State.IDLE);
+		// Record the angle
+		angleB = odo.getTheta();
+		double desiredAngle = averageAngles(angleA,angleB);
+		nav.setRotateTo(desiredAngle);
+		nav.setState(Navigator.State.ROTATETO);
 	}
 
 	public void handleLRE() {

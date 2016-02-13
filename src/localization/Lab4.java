@@ -53,8 +53,9 @@ public class Lab4 {
 
 				// perform the ultrasonic localization
 				Navigator nav = new Navigator(leftMotor, rightMotor);
+				LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
 				USLocalizer usl = new USLocalizer(nav, usSensor, usData, USLocalizer.LocalizationType.FALLING_EDGE);
-				LCDInfo lcd = new LCDInfo(odo, usl);
+				
 				usl.start();
 				
 				
@@ -67,8 +68,8 @@ public class Lab4 {
 
 				// perform the ultrasonic localization
 				Navigator nav = new Navigator(leftMotor, rightMotor);
+				LCDInfo lcd = new LCDInfo(odo, usSensor, usData);
 				USLocalizer usl = new USLocalizer(nav, usSensor, usData, USLocalizer.LocalizationType.RISING_EDGE);
-				LCDInfo lcd = new LCDInfo(odo, usl);
 				usl.start();
 				
 				/*

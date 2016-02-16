@@ -36,7 +36,7 @@ public class Lab4 {
 		// are returned
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
-		Odometer odo = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
+		Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
 		odo.start();
 
 		final TextLCD t = LocalEV3.get().getTextLCD();

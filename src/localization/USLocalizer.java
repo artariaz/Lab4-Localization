@@ -6,7 +6,6 @@ import lejos.robotics.SampleProvider;
 public class USLocalizer extends Thread {
 
 	private Navigator nav;
-	private boolean isFacingWall;
 	private SampleProvider usSensor;
 	private float[] usData;
 	private Odometer odo;
@@ -55,7 +54,7 @@ public class USLocalizer extends Thread {
 	}
 
 	private boolean facingWall(float distance) {
-		if (distance < 32) {
+		if (distance < 28) {
 			return true;
 		} else {
 			return false;
@@ -71,7 +70,7 @@ public class USLocalizer extends Thread {
 				}
 				// No longer facing a wall, stop the motors
 				nav.setState(Navigator.State.IDLE);
-				Sound.buzz();
+				Sound.twoBeeps();
 				sleepThread(250);
 			}
 		}
@@ -82,7 +81,7 @@ public class USLocalizer extends Thread {
 					nav.setState(Navigator.State.ROTATECW);
 				}
 				nav.setState(Navigator.State.IDLE);
-				Sound.buzz();
+				Sound.twoBeeps();
 				sleepThread(250);
 			}
 		}
@@ -119,7 +118,7 @@ public class USLocalizer extends Thread {
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
 		sleepThread(250);
-		angleA = odo.getTheta();
+		angleA = odo.getAng();
 		// Rotate counter clockwise until another wall is reached
 		try {
 			nav.setState(Navigator.State.ROTATECCW);
@@ -136,11 +135,12 @@ public class USLocalizer extends Thread {
 		Sound.beep();
 		// Record the angle
 		sleepThread(250);
-		angleB = odo.getTheta();
+		angleB = odo.getAng();
 		double desiredAngle = handleAngles(angleA, angleB);
+		desiredAngle = desiredAngle + 45;
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
-		odo.setTheta(0.0);
+		odo.setAng(0.0);
 	}
 
 	// Rising edge - initially at back wall, originally facing away from wall
@@ -164,7 +164,7 @@ public class USLocalizer extends Thread {
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
 		sleepThread(250);
-		angleA = odo.getTheta();
+		angleA = odo.getAng();
 		// Rotate counter clockwise until another wall is reached
 		try {
 			nav.setState(Navigator.State.ROTATECCW);
@@ -181,11 +181,12 @@ public class USLocalizer extends Thread {
 		// Record the angle
 		Sound.beep();
 		sleepThread(250);
-		angleB = odo.getTheta();
+		angleB = odo.getAng();
 		double desiredAngle = handleAngles(angleA, angleB);
+		desiredAngle = desiredAngle + 225;
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
-		odo.setTheta(0.0);
+		odo.setAng(0.0);
 	}
 
 	public double handleAngles(double angleA, double angleB) {

@@ -11,7 +11,7 @@ public class Navigator extends Thread {
 	private double leftRadius;
 	private double rightRadius;
 	private double width;
-	private int error = 5;
+	private int error = 2;
 	private int SPEED = 50;
 	private int SLOW = 50;
 	private double DEG_ERR = 5.0;
@@ -42,9 +42,8 @@ public class Navigator extends Thread {
 				break;
 			case ROTATETO:
 				turnTo();
-				if (faceDest()) {
-					this.state = State.IDLE;
-				}
+				this.state = State.IDLE;
+				
 				break;
 			case FORWARD:
 				goForward();
@@ -147,26 +146,12 @@ public class Navigator extends Thread {
 	}
 
 	public void turnTo() {
-		double desiredAngle = rotationalAngle;
-		double currAngle = odo.getTheta();
-		if (desiredAngle < 0) {
-			desiredAngle = desiredAngle + 360;
-		}
-
-		if (odo.getTheta() < 0) {
-			currAngle = odo.getTheta() + 360;
-		}
-		double error = desiredAngle - currAngle;
+		double angle = odo.fixDegAngle(getRotAngle());
+		double error = angle - odo.fixDegAngle(this.odo.getAng());
 
 		while (Math.abs(error) > DEG_ERR) {
-			if (desiredAngle < 0) {
-				desiredAngle = desiredAngle + 360;
-			}
 
-			if (odo.getTheta() < 0) {
-				currAngle = odo.getTheta() + 360;
-			}
-			error = desiredAngle - currAngle;
+			error = angle - odo.fixDegAngle(this.odo.getAng());
 
 			if (error < -180.0) {
 				this.setSpeeds(-SLOW, SLOW);
@@ -179,12 +164,13 @@ public class Navigator extends Thread {
 			}
 		}
 
-		this.setSpeeds(0, 0);
-
+		
+			this.setSpeeds(0, 0);
+		
 	}
 
 	public boolean faceDest() {
-		double currentAngle = this.odo.getTheta();
+		double currentAngle = this.odo.getAng();
 
 		// If angle is near the desired angle given a tolerance error, return
 		// true
@@ -205,5 +191,9 @@ public class Navigator extends Thread {
 
 	public void setState(State state) {
 		this.state = state;
+	}
+	
+	public double getRotAngle(){
+		return rotationalAngle;
 	}
 }

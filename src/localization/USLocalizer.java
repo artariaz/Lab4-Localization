@@ -117,7 +117,7 @@ public class USLocalizer extends Thread {
 		// Stop when you see a wall
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
-		sleepThread(250);
+		sleepThread(1000);
 		angleA = odo.getAng();
 		// Rotate counter clockwise until another wall is reached
 		try {
@@ -134,12 +134,13 @@ public class USLocalizer extends Thread {
 		nav.setState(Navigator.State.IDLE);
 		Sound.beep();
 		// Record the angle
-		sleepThread(250);
+		sleepThread(1000);
 		angleB = odo.getAng();
 		double desiredAngle = handleAngles(angleA, angleB);
 		desiredAngle = desiredAngle + 45;
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
+		sleepThread(15000);
 		odo.setAng(0.0);
 	}
 
@@ -163,7 +164,7 @@ public class USLocalizer extends Thread {
 		// Stop when you see a wall
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
-		sleepThread(250);
+		sleepThread(1000);
 		angleA = odo.getAng();
 		// Rotate counter clockwise until another wall is reached
 		try {
@@ -180,12 +181,13 @@ public class USLocalizer extends Thread {
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
 		Sound.beep();
-		sleepThread(250);
+		sleepThread(1000);
 		angleB = odo.getAng();
 		double desiredAngle = handleAngles(angleA, angleB);
 		desiredAngle = desiredAngle + 225;
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
+		sleepThread(15000);
 		odo.setAng(0.0);
 	}
 

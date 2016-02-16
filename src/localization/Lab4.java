@@ -55,10 +55,9 @@ public class Lab4 {
 			USLocalizer usl = new USLocalizer(nav, usSensor, usData,
 					USLocalizer.LocalizationType.FALLING_EDGE,odo);
 			usl.start();
-			/*
-			 * perform the light sensor localization LightLocalizer lsl = new
-			 * LightLocalizer(odo, colorValue, colorData); lsl.doLocalization();
-			 */
+			
+			//LightLocalizer lsl = new LightLocalizer(odo, colorValue, colorData); 
+			 
 		} else if (buttonChoice == Button.ID_RIGHT) {
 
 			// perform the ultrasonic localization
@@ -73,7 +72,8 @@ public class Lab4 {
 			 */
 		}
 		
-
+		int part2Button = Button.waitForAnyPress();
+		
 		
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE)

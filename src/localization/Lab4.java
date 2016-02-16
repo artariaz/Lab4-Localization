@@ -34,6 +34,8 @@ public class Lab4 {
 		// the buffer in
 		// which data
 		// are returned
+		leftMotor.setSpeed(0);
+		rightMotor.setSpeed(0);
 		Odometer odo = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
 		odo.start();
 

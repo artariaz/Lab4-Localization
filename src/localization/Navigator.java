@@ -12,12 +12,16 @@ public class Navigator extends Thread {
 	private double rightRadius;
 	private double width;
 	private int error = 5;
+	private int SPEED = 50;
+	private int SLOW = 50;
+	private double DEG_ERR = 5.0;
 
 	public enum State {
 		INIT, IDLE, ROTATECW, ROTATECCW, ROTATETO, FORWARD
 	}
 
-	public Navigator(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Odometer odo,
+	public Navigator(EV3LargeRegulatedMotor leftMotor,
+			EV3LargeRegulatedMotor rightMotor, Odometer odo,
 			double wheelRadius, double width) {
 		this.rightMotor = rightMotor;
 		this.leftMotor = leftMotor;
@@ -37,9 +41,9 @@ public class Navigator extends Thread {
 				rotateCCW();
 				break;
 			case ROTATETO:
-				rotateTo();
+				turnTo();
 				if (faceDest()) {
-				this.state = State.IDLE;
+					this.state = State.IDLE;
 				}
 				break;
 			case FORWARD:
@@ -55,9 +59,35 @@ public class Navigator extends Thread {
 
 	}
 
+	public void setSpeeds(float lSpd, float rSpd) {
+		this.leftMotor.setSpeed(lSpd);
+		this.rightMotor.setSpeed(rSpd);
+		if (lSpd < 0)
+			this.leftMotor.backward();
+		else
+			this.leftMotor.forward();
+		if (rSpd < 0)
+			this.rightMotor.backward();
+		else
+			this.rightMotor.forward();
+	}
+
+	public void setSpeeds(int lSpd, int rSpd) {
+		this.leftMotor.setSpeed(lSpd);
+		this.rightMotor.setSpeed(rSpd);
+		if (lSpd < 0)
+			this.leftMotor.backward();
+		else
+			this.leftMotor.forward();
+		if (rSpd < 0)
+			this.rightMotor.backward();
+		else
+			this.rightMotor.forward();
+	}
+
 	public void rotateCCW() {
-		this.rightMotor.setSpeed(150);
-		this.leftMotor.setSpeed(150);
+		this.rightMotor.setSpeed(SPEED);
+		this.leftMotor.setSpeed(SPEED);
 
 		this.rightMotor.forward();
 		this.leftMotor.backward();
@@ -72,8 +102,8 @@ public class Navigator extends Thread {
 	// Rotate Clockwise
 	public void rotateCW() {
 
-		this.rightMotor.setSpeed(150);
-		this.leftMotor.setSpeed(150);
+		this.rightMotor.setSpeed(SPEED);
+		this.leftMotor.setSpeed(SPEED);
 
 		this.rightMotor.backward();
 		this.leftMotor.forward();
@@ -86,8 +116,8 @@ public class Navigator extends Thread {
 	}
 
 	public void goForward() {
-		this.rightMotor.setSpeed(150);
-		this.leftMotor.setSpeed(150);
+		this.rightMotor.setSpeed(SPEED);
+		this.leftMotor.setSpeed(SPEED);
 
 		this.rightMotor.forward();
 		this.leftMotor.forward();
@@ -116,64 +146,50 @@ public class Navigator extends Thread {
 		this.rotationalAngle = angle;
 	}
 
-	public void rotateTo() {
-		double currentAngle = this.odo.getTheta();
-		double rotationAngle;
-		double smallestAngle;
-		int ROTATE_SPEED = 150;
-		if (currentAngle > rotationalAngle) {
-			rotationAngle = currentAngle - rotationalAngle;
-			if (rotationAngle > 180) {
-				// Turn right by 360 - rotationAngle
-				smallestAngle = 360 - rotationAngle;
-				leftMotor.setSpeed(ROTATE_SPEED);
-				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
-			} else {
-				// Turn left by rotationAngle
-				smallestAngle = rotationAngle;
-				leftMotor.setSpeed(ROTATE_SPEED);
-				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
+	public void turnTo() {
+		double desiredAngle = rotationalAngle;
+		double currAngle = odo.getTheta();
+		if (desiredAngle < 0) {
+			desiredAngle = desiredAngle + 360;
+		}
+
+		if (odo.getTheta() < 0) {
+			currAngle = odo.getTheta() + 360;
+		}
+		double error = desiredAngle - currAngle;
+
+		while (Math.abs(error) > DEG_ERR) {
+			if (desiredAngle < 0) {
+				desiredAngle = desiredAngle + 360;
 			}
 
-		} else if (currentAngle < rotationalAngle) {
-			rotationAngle = rotationalAngle - currentAngle;
-			if (rotationAngle > 180) {
-				// Turn left by 360 - rotationTheta
-				smallestAngle = 360 - rotationAngle;
-				leftMotor.setSpeed(ROTATE_SPEED);
-				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(-convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(convertAngle(rightRadius, width, smallestAngle), false);
+			if (odo.getTheta() < 0) {
+				currAngle = odo.getTheta() + 360;
+			}
+			error = desiredAngle - currAngle;
+
+			if (error < -180.0) {
+				this.setSpeeds(-SLOW, SLOW);
+			} else if (error < 0.0) {
+				this.setSpeeds(SLOW, -SLOW);
+			} else if (error > 180.0) {
+				this.setSpeeds(SLOW, -SLOW);
 			} else {
-				// Turn right by rotationTheta
-				smallestAngle = rotationAngle;
-				leftMotor.setSpeed(ROTATE_SPEED);
-				rightMotor.setSpeed(ROTATE_SPEED);
-				leftMotor.rotate(convertAngle(leftRadius, width, smallestAngle), true);
-				rightMotor.rotate(-convertAngle(rightRadius, width, smallestAngle), false);
+				this.setSpeeds(-SLOW, SLOW);
 			}
 		}
 
-		// Sets the thread to sleep for 200 ms once the robot finishes rotating.
-		try {
-
-			Thread.sleep(200);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.setSpeeds(0, 0);
 
 	}
-	public boolean faceDest()  {
+
+	public boolean faceDest() {
 		double currentAngle = this.odo.getTheta();
 
 		// If angle is near the desired angle given a tolerance error, return
 		// true
-		if (rotationalAngle + error >= currentAngle || rotationalAngle - error <= currentAngle) {
+		if (rotationalAngle + error >= currentAngle
+				|| rotationalAngle - error <= currentAngle) {
 			return true;
 		} else
 			return false;

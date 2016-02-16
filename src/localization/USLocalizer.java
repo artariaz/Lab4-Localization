@@ -15,14 +15,11 @@ public class USLocalizer extends Thread {
 		FALLING_EDGE, RISING_EDGE
 	};
 
-	public enum Location {
-		LEFT, BOTTOM
-	};
 
 	private LocalizationType locType;
-	private Location location;
 
-	public USLocalizer(Navigator nav, SampleProvider usSensor, float[] usData, LocalizationType locType, Odometer odo) {
+	public USLocalizer(Navigator nav, SampleProvider usSensor, float[] usData,
+			LocalizationType locType, Odometer odo) {
 		this.nav = nav;
 		this.usSensor = usSensor;
 		this.usData = usData;
@@ -34,29 +31,17 @@ public class USLocalizer extends Thread {
 		nav.start();
 
 		// Set up a starting point
-		initialize();
+		initialize(locType);
 
 		// Look for what algorithm to follow (Rising Edge or Falling Edge)
 		switch (locType) {
 		case FALLING_EDGE:
-			switch (location) {
-			case LEFT:
-			handleLFE();
-				break;
-			case BOTTOM:
-			handleBFE();
-				break;
-			}
+			
+			fallingEdge();
+
 			break;
 		case RISING_EDGE:
-			switch (location) {
-			case LEFT:
-			handleLRE();
-				break;
-			case BOTTOM:
-			handleBRE();
-				break;
-			}
+			risingEdge();
 			break;
 
 		}
@@ -70,71 +55,77 @@ public class USLocalizer extends Thread {
 	}
 
 	private boolean facingWall(float distance) {
-		if (distance < 30) {
+		if (distance < 32) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private void initialize() {
+	private void initialize(LocalizationType loctype) {
 		// If it is facing wall
-		if (facingWall(getFilteredData())) {
-			this.location = Location.LEFT;
-			while (facingWall(getFilteredData())) {
-				nav.setState(Navigator.State.ROTATECW);
+		if (loctype == LocalizationType.FALLING_EDGE) {
+			if (facingWall(getFilteredData())) {
+				while (facingWall(getFilteredData())) {
+					nav.setState(Navigator.State.ROTATECW);
+				}
+				// No longer facing a wall, stop the motors
+				nav.setState(Navigator.State.IDLE);
+				Sound.buzz();
+				sleepThread(250);
 			}
-			// No longer facing a wall, stop the motors
-			nav.setState(Navigator.State.IDLE);
-			sleepThread(250);
+		}
+		if (loctype == LocalizationType.RISING_EDGE) {
+			// If it is not facing a wall
+			if (!(facingWall(getFilteredData()))) {
+				while (!(facingWall(getFilteredData()))) {
+					nav.setState(Navigator.State.ROTATECW);
+				}
+				nav.setState(Navigator.State.IDLE);
+				Sound.buzz();
+				sleepThread(250);
+			}
 		}
 
-		// If it is not facing a wall
-		else {
-			this.location = Location.BOTTOM;
-			while (!(facingWall(getFilteredData()))) {
-				nav.setState(Navigator.State.ROTATECW);
-			}
-			nav.setState(Navigator.State.IDLE);
-			sleepThread(250);
-		}
 	}
 
 	public void sleepThread(int amount) {
 		try {
 			Thread.sleep(amount);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void handleLFE() {
+	// Falling edge - initial angle will be the left wall - originally facing
+	// the wall
+	// To turn to the next wall (back), rotate clockwise
+	public void fallingEdge() {
 		double angleA;
 		double angleB;
-		try {
+		/*try {
 			nav.setState(Navigator.State.ROTATECW);
-			Thread.sleep(1000);
+			Thread.sleep(2500);
 			nav.setState(Navigator.State.IDLE);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		// Rotate clockwise until a wall is reached
 		while (!(facingWall(getFilteredData()))) {
 			nav.setState(Navigator.State.ROTATECW);
 		}
+		Sound.beep();
 		// Stop when you see a wall
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
+		sleepThread(250);
 		angleA = odo.getTheta();
 		// Rotate counter clockwise until another wall is reached
 		try {
 			nav.setState(Navigator.State.ROTATECCW);
-			Thread.sleep(1000);
+			Thread.sleep(2500);
 			nav.setState(Navigator.State.IDLE);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		while (!(facingWall(getFilteredData()))) {
@@ -142,72 +133,65 @@ public class USLocalizer extends Thread {
 		}
 		// Stop when you see a wall
 		nav.setState(Navigator.State.IDLE);
+		Sound.beep();
 		// Record the angle
+		sleepThread(250);
 		angleB = odo.getTheta();
-		double desiredAngle = averageAngles(angleA,angleB);
-		desiredAngle = desiredAngle - 45;
+		double desiredAngle = handleAngles(angleA, angleB);
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
-		odo.setTheta(0);
-		
-
+		odo.setTheta(0.0);
 	}
 
-	public void handleBFE() {
+	// Rising edge - initially at back wall, originally facing away from wall
+	// Turn CW to get to next wall (left wall)
+	public void risingEdge() { //has to start with seeing a wall 
 		double angleA;
 		double angleB;
-		try {
-			nav.setState(Navigator.State.ROTATECCW);
-			Thread.sleep(1000);
+		/*try {
+			nav.setState(Navigator.State.ROTATECW);
+			Thread.sleep(2500);
 			nav.setState(Navigator.State.IDLE);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		// Rotate clockwise until a wall is reached
-		while (!(facingWall(getFilteredData()))) {
-			nav.setState(Navigator.State.ROTATECCW);
+		while (facingWall(getFilteredData())) {
+			nav.setState(Navigator.State.ROTATECW);
 		}
+		Sound.beep();
 		// Stop when you see a wall
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
+		sleepThread(250);
 		angleA = odo.getTheta();
 		// Rotate counter clockwise until another wall is reached
 		try {
-			nav.setState(Navigator.State.ROTATECW);
-			Thread.sleep(1000);
+			nav.setState(Navigator.State.ROTATECCW);
+			Thread.sleep(2500);
 			nav.setState(Navigator.State.IDLE);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		while (!(facingWall(getFilteredData()))) {
-			nav.setState(Navigator.State.ROTATECW);
+		while (facingWall(getFilteredData())) {
+			nav.setState(Navigator.State.ROTATECCW);
 		}
 		// Stop when you see a wall
 		nav.setState(Navigator.State.IDLE);
 		// Record the angle
+		Sound.beep();
+		sleepThread(250);
 		angleB = odo.getTheta();
-		double desiredAngle = averageAngles(angleA,angleB);
-		desiredAngle = desiredAngle + 135;
+		double desiredAngle = handleAngles(angleA, angleB);
 		nav.setRotateTo(desiredAngle);
 		nav.setState(Navigator.State.ROTATETO);
-		odo.setTheta(0);
-		
+		odo.setTheta(0.0);
 	}
 
-
-	public void handleLRE() {
-
-	}
-
-	public void handleBRE() {
-
-	}
-
-	public double averageAngles(double angleOne, double angleTwo) {
-		double averageAngle = (angleOne + angleTwo) / 2.0;
-
-		return averageAngle;
+	public double handleAngles(double angleA, double angleB) {
+		// calculate the average angle using a+b/2
+		double angle;
+		angle = (angleA + angleB) / 2.0;
+		return angle;
 	}
 }

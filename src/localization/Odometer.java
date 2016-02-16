@@ -85,14 +85,12 @@ public class Odometer extends Thread {
 				// the x and y values are updated using the calculations above
 				x = x + dX;
 				y = y + dY;
-				// the angle is bounded (0, 360]
 				if (theta > 360) {
-					theta = theta - 360;
+					theta = theta -360;
 				}
-				if (theta < 0) {
+				if (theta < -360) {
 					theta = theta + 360;
 				}
-
 			}
 
 			// this ensures that the odometer only runs once every period
